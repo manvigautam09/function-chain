@@ -69,3 +69,26 @@ export const createPath = (
             ${cp2x} ${cp2y},
             ${end.x} ${end.y}`;
 };
+
+export const evaluateExpression = (expression: string, x: number): number => {
+  try {
+    // First replace x^2 with x**2 for JavaScript math
+    let jsExpression = expression.replace(/x\^(\d+)/g, "x**$1");
+
+    // Handle implicit multiplication (like 2x) by adding *
+    jsExpression = jsExpression.replace(/(\d)x/g, "$1*x");
+
+    // Then replace x with the number
+    jsExpression = jsExpression.replace(/x/g, `${x}`);
+
+    // Create a safe function to evaluate the expression
+    const mathFunction = new Function("return " + jsExpression);
+    const result = mathFunction();
+
+    console.log(`Expression: ${expression}, x: ${x}, evaluated: ${result}`);
+    return Number(result.toFixed(2));
+  } catch (error) {
+    console.error("Error evaluating expression:", error);
+    return 0;
+  }
+};
